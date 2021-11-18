@@ -1,4 +1,4 @@
-resource "aws_iam_instance_profile" "wp_node" {
+resource "aws_iam_instance_profile" "ins_profile" {
   name = "EC2_instance_profile"
   role = "${aws_iam_role.ec2_role.name}"
 }
@@ -19,6 +19,13 @@ resource "aws_iam_role" "ec2_role" {
   ]
 }
 POLICY
+
+  tags = merge( var.global_tags,
+    {
+      Name = "EC2 Role for ${var.project} project"
+    },
+  )
+
 }
 
 resource "aws_iam_role_policy" "get_ssm_parameters_policy" {
