@@ -12,14 +12,11 @@ sudo sed -i "s/^.*DB_NAME.*$/define('DB_NAME', '${db_name}');/" /var/www/html/wp
 sudo sed -i "s/^.*DB_USER.*$/define('DB_USER', '${db_user}');/" /var/www/html/wp-config.php
 
 export INSTANCE_REGION=`curl -s http://169.254.169.254/latest/meta-data/placement/region`
+root_db_password=`aws ssm get-parameter --name "${db_pass_ssm}" --with-decryption --query Parameter.Value --output text --region $INSTANCE_REGION`
 
-root_db_password=`aws ssm get-parameter --name "/wp/mysql_root_password_location" --with-decryption --query Parameter.Value --output text --region $INSTANCE_REGION`
 sudo sed -i "s/^.*DB_PASSWORD.*$/define('DB_PASSWORD', '$root_db_password');/" /var/www/html/wp-config.php
 sudo sed -i "s/^.*DB_HOST.*$/define('DB_HOST', '${db_host}');/" /var/www/html/wp-config.php
-
-
 sudo sed -i '/<Directory "\/var\/www\/html">/,/<\/Directory>/ s/AllowOverride None/AllowOverride all/' /etc/httpd/conf/httpd.conf
-
 
 sudo mkdir /var/www/html/wp-content/uploads
 sudo mount -t efs ${efs_id}:/ /var/www/html/wp-content/uploads
@@ -29,14 +26,11 @@ sudo chmod 777 /var/www/html/wp-content/uploads
 sudo systemctl start httpd
 sudo systemctl enable httpd
 
+myip=`curl http://169.254.169.254/latest/meta-data/local-ipv4`
+echo "<h2> Web Server with ip: $myip </h2><br>Build by Terraform" > /var/www/html/server.html
 
 public_hostname=`curl http://169.254.169.254/latest/meta-data/public-hostname`
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 chmod +x wp-cli.phar
 ./wp-cli.phar option update home http://${elb_dns}/ --path=/var/www/html
 ./wp-cli.phar option update siteurl http://${elb_dns}/ --path=/var/www/html
-
-myip=`curl http://169.254.169.254/latest/meta-data/local-ipv4`
-echo "<h2> Web Server with ip: $myip </h2><br>Build by Terraform" > /var/www/html/server.html
-
-

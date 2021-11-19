@@ -1,31 +1,40 @@
+variable "ssh_key_name" {
+  description = "The name of existing ssh key for EC2 instances"
+  default     = "key-london"
+}
+
 variable "region" {
-  default = "us-east-1"
+  description = "The AWS region for this project"
+  default     = "eu-west-2"
 }
 
 variable "project" {
-  default = "WordPress HA"
+  description = "The name of the project"
+  default     = "WordPress HA"
 }
 
 variable "s_project" {
-  default = "WP"
+  description = "The short name of the project"
+  default     = "WP"
 }
 
 variable "application" {
-  default = "WordPress"
+  description = "The name of application in the project"
+  default     = "WordPress"
 }
 
 variable "owner" {
-  default = "Aleksandr_Petrovskii1"
+  description = "The name of owner of creating resources"
+  default     = "Aleksandr_Petrovskii1"
 }
 
-
 variable "vpc_cidr" {
-  description = "VPC cidr"
-  default = "10.0.0.0/16"
+  description = "VPC cidr block"
+  default     = "10.0.0.0/16"
 }
 
 variable "subnets" {
-  description = "Subnets cidr"
+  description = "AZ letters and subnets blocks for subnets"
   type        = map(any)
   default = {
     a = "10.0.0.0/24"
@@ -34,29 +43,21 @@ variable "subnets" {
 }
 
 variable "db" {
-  description = "Variables for the DataBase connection"
+  description = "Variables for the DataBase connection."
   type        = map(any)
   default = {
-    name   = "wordpress"
+    name = "wordpress"
     user = "wordpressuser"
   }
 }
 
-variable "ssm_mysql_root_location" {
-  type = string
-  default = "/wp/mysql_root_password_location"
-
-}
-
-
-
 variable "global_tags" {
-  description = "Map of specific tags that will be added to the defaults (e.g. Name) for all AWS resources."
-  type = map(any)
+  description = "Global tags. Will be on the most of resources"
+  type        = map(any)
   default = {
     Application = "WordPress"
-    Terraform = "true"
-    Project = "WordPress HA"
-    owner = "Aleksandr_Petrovskii1"
+    Terraform   = "true"
+    Project     = "WordPress HA"
+    owner       = "Aleksandr_Petrovskii1"
   }
 }

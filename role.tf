@@ -1,6 +1,6 @@
 resource "aws_iam_instance_profile" "ins_profile" {
   name = "EC2_instance_profile"
-  role = "${aws_iam_role.ec2_role.name}"
+  role = aws_iam_role.ec2_role.name
 }
 
 resource "aws_iam_role" "ec2_role" {
@@ -19,18 +19,16 @@ resource "aws_iam_role" "ec2_role" {
   ]
 }
 POLICY
-
-  tags = merge( var.global_tags,
+  tags = merge(var.global_tags,
     {
       Name = "EC2 Role for ${var.project} project"
     },
   )
-
 }
 
 resource "aws_iam_role_policy" "get_ssm_parameters_policy" {
   name   = "get_ssm_parameters_policy"
-  role   = "${aws_iam_role.ec2_role.name}"
+  role   = aws_iam_role.ec2_role.name
   policy = <<EOF
 {
       "Version": "2012-10-17",
